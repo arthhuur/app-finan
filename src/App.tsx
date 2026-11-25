@@ -1,11 +1,25 @@
-import './App.css'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import CadastroPage from './pages/CadastroPage'
+import LoginPage from './pages/LoginPage'
+import PainelPage from './pages/PainelPage'
+import { RotaProtegida } from './routes/RotaProtegida'
 
-function App() {
+export default function App() {
   return (
-    <main className="p-6">
-      <h1 className="text-3xl font-bold text-blue-600">Finan</h1>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/painel" replace />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/cadastro" element={<CadastroPage />} />
+        <Route
+          path="/painel"
+          element={
+            <RotaProtegida>
+              <PainelPage />
+            </RotaProtegida>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   )
 }
-
-export default App
