@@ -38,6 +38,17 @@ export function useMetas() {
     await buscarMetas();
     return null;
   }
+    async function registrarAporte(id: string, novoValorAtual: number): Promise<string | null> {
+    const { error } = await supabase
+      .from("metas")
+      .update({ valor_atual: novoValorAtual })
+      .eq("id", id);
+    if (error) return error.message;
+    await buscarMetas();
+    return null;
+  }
 
-  return { metas, carregando, erro, criarMeta };
+
+  return { metas, carregando, erro, criarMeta, registrarAporte };
+
 }

@@ -5,7 +5,7 @@ import { useMetas } from "../hooks/useMetas";
 import type { NovaMeta } from "../types/meta";
 
 export default function PainelPage() {
-  const { metas, carregando, erro, criarMeta } = useMetas();
+  const { metas, carregando, erro, criarMeta, registrarAporte } = useMetas();
   const [mostrarForm, setMostrarForm] = useState(false);
 
   async function handleCriar(dados: NovaMeta) {
@@ -50,7 +50,11 @@ export default function PainelPage() {
       {!carregando && !erro && metas.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {metas.map((meta) => (
-            <MetaCard key={meta.id} meta={meta} />
+            <MetaCard
+              key={meta.id}
+              meta={meta}
+              onAporte={(novoValor) => registrarAporte(meta.id, novoValor)}
+            />
           ))}
         </div>
       )}

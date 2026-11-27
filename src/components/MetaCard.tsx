@@ -1,7 +1,10 @@
+import { useState } from "react";
 import type { Meta } from "../types/meta";
+import { AporteForm } from "./AporteForm";
 
 type MetaCardProps = {
   meta: Meta;
+  onAporte: (novoValorAtual: number) => Promise<string | null>;
 };
 
 const formatarMoeda = (valor: number) =>
@@ -10,12 +13,20 @@ const formatarMoeda = (valor: number) =>
 const formatarData = (data: string) =>
   new Date(`${data}T00:00:00`).toLocaleDateString("pt-BR");
 
-export function MetaCard({ meta }: MetaCardProps) {
+export function MetaCard({ meta, onAporte }: MetaCardProps) {
+  const [mostrarAporte, setMostrarAporte] = useState(false);
+
   const percentual = Math.min(
     Math.round((meta.valor_atual / meta.valor_alvo) * 100),
     100
   );
   const concluida = percentual >= 100;
+
+  async function handleAporte(novoValorAtual: number) {
+    const erro = await onAporte(novoValorAtual);
+    if (!erro) setMostrarAporte(false);
+    return erro;
+  }
 
   return (
     <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
@@ -54,6 +65,22 @@ export function MetaCard({ meta }: MetaCardProps) {
           {formatarMoeda(meta.valor_alvo)}
         </span>
       </div>
+
+      {mostrarAporte ? (
+        <AporteForm
+          valorAtual={meta.valor_atual}
+          onSalvar={handleAporte}
+          onCancelar={() => setMostrarAporte(false)}
+        />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setMostrarAporte(true)}
+          className="mt-4 w-full rounded-lg border border-teal-600 px-3 py-1.5 text-sm font-semibold text-teal-700 hover:bg-teal-50"
+        >
+          Registrar aporte
+        </button>
+      )}
     </div>
   );
 }
