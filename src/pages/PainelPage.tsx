@@ -1,21 +1,20 @@
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
-import { sair } from '../services/authService'
+import { MetaCard } from "../components/MetaCard";
+import type { Meta } from "../types/meta";
+
+const metaTeste: Meta = {
+  id: "1",
+  user_id: "1",
+  nome: "Reserva de emergência",
+  valor_alvo: 10000,
+  valor_atual: 3500,
+  prazo: "2027-06-30",
+  created_at: "2026-11-27T00:00:00Z",
+};
 
 export default function PainelPage() {
-  const navigate = useNavigate()
-  const { user } = useAuth()
-
-  async function handleSair() {
-    await sair()
-    navigate('/login', { replace: true })
-  }
-
   return (
-    <main>
-      <h1>Painel</h1>
-      <p>Logado como: {user?.email}</p>
-      <button onClick={handleSair}>Sair</button>
-    </main>
-  )
+    <div className="max-w-sm">
+      <MetaCard meta={metaTeste} />
+    </div>
+  );
 }
