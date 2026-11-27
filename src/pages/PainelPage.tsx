@@ -1,20 +1,26 @@
 import { MetaCard } from "../components/MetaCard";
-import type { Meta } from "../types/meta";
-
-const metaTeste: Meta = {
-  id: "1",
-  user_id: "1",
-  nome: "Reserva de emergência",
-  valor_alvo: 10000,
-  valor_atual: 3500,
-  prazo: "2027-06-30",
-  created_at: "2026-11-27T00:00:00Z",
-};
+import { useMetas } from "../hooks/useMetas";
 
 export default function PainelPage() {
+  const { metas, carregando, erro } = useMetas();
+
+  if (carregando) {
+    return <p className="text-slate-500">Carregando metas...</p>;
+  }
+
+  if (erro) {
+    return <p className="text-red-600">Erro ao carregar metas: {erro}</p>;
+  }
+
+  if (metas.length === 0) {
+    return <p className="text-slate-500">Nenhuma meta cadastrada ainda.</p>;
+  }
+
   return (
-    <div className="max-w-sm">
-      <MetaCard meta={metaTeste} />
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      {metas.map((meta) => (
+        <MetaCard key={meta.id} meta={meta} />
+      ))}
     </div>
   );
 }
