@@ -47,8 +47,29 @@ export function useMetas() {
     await buscarMetas();
     return null;
   }
+      async function editarMeta(id: string, dados: NovaMeta): Promise<string | null> {
+    const { error } = await supabase.from("metas").update(dados).eq("id", id);
+    if (error) return error.message;
+    await buscarMetas();
+    return null;
+  }
+
+  async function excluirMeta(id: string): Promise<string | null> {
+    const { error } = await supabase.from("metas").delete().eq("id", id);
+    if (error) return error.message;
+    await buscarMetas();
+    return null;
+  }
 
 
-  return { metas, carregando, erro, criarMeta, registrarAporte };
+  return {
+    metas,
+    carregando,
+    erro,
+    criarMeta,
+    editarMeta,
+    excluirMeta,
+    registrarAporte,
+  };
 
 }

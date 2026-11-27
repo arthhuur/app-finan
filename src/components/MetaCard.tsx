@@ -1,10 +1,12 @@
 import { useState } from "react";
-import type { Meta } from "../types/meta";
 import { AporteForm } from "./AporteForm";
+import type { Meta } from "../types/meta";
 
 type MetaCardProps = {
   meta: Meta;
   onAporte: (novoValorAtual: number) => Promise<string | null>;
+  onEditar: () => void;
+  onExcluir: () => void;
 };
 
 const formatarMoeda = (valor: number) =>
@@ -13,7 +15,7 @@ const formatarMoeda = (valor: number) =>
 const formatarData = (data: string) =>
   new Date(`${data}T00:00:00`).toLocaleDateString("pt-BR");
 
-export function MetaCard({ meta, onAporte }: MetaCardProps) {
+export function MetaCard({ meta, onAporte, onEditar, onExcluir }: MetaCardProps) {
   const [mostrarAporte, setMostrarAporte] = useState(false);
 
   const percentual = Math.min(
@@ -66,6 +68,12 @@ export function MetaCard({ meta, onAporte }: MetaCardProps) {
         </span>
       </div>
 
+      {concluida && meta.valor_atual > meta.valor_alvo && (
+        <p className="mt-1 text-xs font-medium text-emerald-700">
+          Meta superada em {formatarMoeda(meta.valor_atual - meta.valor_alvo)}
+        </p>
+      )}
+
       {mostrarAporte ? (
         <AporteForm
           valorAtual={meta.valor_atual}
@@ -81,6 +89,23 @@ export function MetaCard({ meta, onAporte }: MetaCardProps) {
           Registrar aporte
         </button>
       )}
+
+      <div className="mt-3 flex justify-end gap-3 text-xs">
+        <button
+          type="button"
+          onClick={onEditar}
+          className="text-slate-500 hover:text-teal-700"
+        >
+          Editar
+        </button>
+        <button
+          type="button"
+          onClick={onExcluir}
+          className="text-slate-500 hover:text-red-600"
+        >
+          Excluir
+        </button>
+      </div>
     </div>
   );
 }

@@ -2,16 +2,48 @@ import { useState } from "react";
 import { FormMeta } from "../components/FormMeta";
 import { MetaCard } from "../components/MetaCard";
 import { useMetas } from "../hooks/useMetas";
-import type { NovaMeta } from "../types/meta";
+import type { Meta, NovaMeta } from "../types/meta";
 
 export default function PainelPage() {
-  const { metas, carregando, erro, criarMeta, registrarAporte } = useMetas();
+  const {
+    metas,
+    carregando,
+    erro,
+    criarMeta,
+    editarMeta,
+    excluirMeta,
+    registrarAporte,
+  } = useMetas();
   const [mostrarForm, setMostrarForm] = useState(false);
+  const [metaEditando, setMetaEditando] = useState<Meta | null>(null);
 
-  async function handleCriar(dados: NovaMeta) {
-    const msgErro = await criarMeta(dados);
-    if (!msgErro) setMostrarForm(false);
+  function abrirNova() {
+    setMetaEditando(null);
+    setMostrarForm(true);
+  }
+
+  function abrirEdicao(meta: Meta) {
+    setMetaEditando(meta);
+    setMostrarForm(true);
+  }
+
+  function fecharForm() {
+    setMostrarForm(false);
+    setMetaEditando(null);
+  }
+
+  async function handleSalvar(dados: NovaMeta) {
+    const msgErro = metaEditando
+      ? await editarMeta(metaEditando.id, dados)
+      : await criarMeta(dados);
+    if (!msgErro) fecharForm();
     return msgErro;
+  }
+
+  async function handleExcluir(meta: Meta) {
+    if (!window.confirm(`Excluir a meta "${meta.nome}"?`)) return;
+    const msgErro = await excluirMeta(meta.id);
+    if (msgErro) alert(`Não foi possível excluir: ${msgErro}`);
   }
 
   return (
@@ -20,7 +52,7 @@ export default function PainelPage() {
         <h1 className="text-xl font-semibold text-slate-900">Metas</h1>
         {!mostrarForm && (
           <button
-            onClick={() => setMostrarForm(true)}
+            onClick={abrirNova}
             className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700"
           >
             Nova meta
@@ -31,8 +63,10 @@ export default function PainelPage() {
       {mostrarForm && (
         <div className="max-w-md">
           <FormMeta
-            onSalvar={handleCriar}
-            onCancelar={() => setMostrarForm(false)}
+            key={metaEditando?.id ?? "nova"}
+            metaInicial={metaEditando ?? undefined}
+            onSalvar={handleSalvar}
+            onCancelar={fecharForm}
           />
         </div>
       )}
@@ -54,6 +88,8 @@ export default function PainelPage() {
               key={meta.id}
               meta={meta}
               onAporte={(novoValor) => registrarAporte(meta.id, novoValor)}
+              onEditar={() => abrirEdicao(meta)}
+              onExcluir={() => handleExcluir(meta)}
             />
           ))}
         </div>
